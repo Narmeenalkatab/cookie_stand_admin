@@ -1,51 +1,111 @@
-import React, { useState } from "react";
-import Head from "next/head";
-import Header from "../components/Header";
-import CreateForm from "../components/CreateForm";
-import ReportTable from "../components/ReportTable";
-import Footer from "../components/Footer";
+import MyHead from "../components/Head";
+import { useAuth } from "@/contexts/auth";
+import Login from "./login";
+import { useState, useEffect } from "react";
+import CookieStandAdmin from "@/components/CookieStandAdmin";
+const baseUrl = process.env.NEXT_PUBLIC_URL;
 
-export default function Home() {
-  const [location, setLocation] = useState("");
-  const [minimum, setMinimum] = useState("");
-  const [maximum, setMaximum] = useState("");
-  const [average, setAverage] = useState("");
-  const [json, setJson] = useState(null); // Initialize json as null
+export default function Admin() {
+  const [json, serJson] = useState([]);
+  const { user, token } = useAuth();
 
-  function all() {
-    const dataToSave = {
-      Location: location,
-      Minimum: minimum,
-      Maximum: maximum,
-      Average: average,
-    };
-    setJson(dataToSave); // Set json data
+  async function PostData(cookies) {
+    if (token) {
+      const url = baseUrl + "/api/v1/cookie_stands/";
+      const option = {
+        method: "POST",
+        body: JSON.stringify(cookies),
+        headers: {
+          Authorization: `Bearer ${token.access}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const res = await fetch(url, option);
+      if (res.status === 201) {
+        serJson([...json, cookies]);
+      } else {
+        console.log("Failed to access protected route.");
+      }
+    }
   }
 
-  function submitHandler(event) {
+  async function getData() {
+    if (token) {
+      const url = baseUrl + "/api/v1/cookie_stands/";
+      const option = {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token.access}`,
+        },
+      };
+      const res = await fetch(url, option);
+      if (res.status === 200) {
+        const data = await res.json();
+        serJson([]);
+        data.forEach((value) => {
+          serJson((json2) => [...json2, value]);
+        });
+      } else {
+        console.log("Failed to access protected route.");
+      }
+    }
+  }
+
+  async function deletData(idPost) {
+    if (token) {
+      const protectedUrl = `${baseUrl}/api/v1/cookie_stands/${idPost}`;
+      const protectedOptions = {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token.access}`,
+        },
+      };
+      try {
+        const protectedResponse = await fetch(protectedUrl, protectedOptions);
+        if (protectedResponse.status === 204) {
+          serJson([]);
+          getData();
+        } else {
+          console.log("Failed to post data.");
+        }
+      } catch (error) {
+        console.log(`Error: ${error.message}`);
+      }
+    } else {
+      console.log("Token is missing.");
+    }
+  }
+  useEffect(() => {
+    getData();
+  }, [token]);
+
+  async function submitHandler(event) {
     event.preventDefault();
-    all();
+    const dataToSave = {
+      location: event.target.location.value,
+      minimum_customers_per_hour: event.target.Minimum.value,
+      maximum_customers_per_hour: event.target.Maximum.value,
+      average_cookies_per_sale: event.target.Average.value,
+    };
+
+    PostData(dataToSave);
+    event.target.reset();
   }
 
   return (
     <>
-      <Head>
-        <title>Home</title>
-      </Head>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex flex-col items-center justify-between p-20">
-          <CreateForm
+      {user ? (
+        <>
+          <MyHead data={"Home"} />
+          <CookieStandAdmin
             handler={submitHandler}
-            setLocation={setLocation}
-            setMinimum={setMinimum}
-            setMaximum={setMaximum}
-            setAverage={setAverage}
+            data={json}
+            del={deletData}
           />
-          <ReportTable json={json} />
-        </main>
-        <Footer />
-      </div>
+        </>
+      ) : (
+        <Login />
+      )}
     </>
   );
 }
