@@ -114,7 +114,7 @@ export default function CreateForm({ handler }) {
             <div className="items-center justify-between w-200px">
               <button
                 type="submit"
-                className="flex w-full items-center h-full justify-center rounded-md bg-green-700 py-1.5 text-20px font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full items-center h-full justify-center rounded-md bg-pink-700 py-1.5 text-20px font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Create
               </button>

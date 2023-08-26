@@ -63,7 +63,7 @@ export default function LoginForm() {
             <div className="items-center w-full p-4 ">
               <button
                 type="submit"
-                className="flex items-center justify-center w-full h-full py-2 font-semibold leading-6 text-white bg-green-700 rounded-md shadow-sm text-20px hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex items-center justify-center w-full h-full py-2 font-semibold leading-6 text-white bg-pink-700 rounded-md shadow-sm text-20px hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 LOGIN
               </button>
